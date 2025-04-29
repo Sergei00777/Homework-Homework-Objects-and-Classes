@@ -1,4 +1,4 @@
-# Домашняя Работа задача 2
+# Домашняя Работа задача 3
 class Student:
     def __init__(self, name, surname, gender):
         self.name = name
@@ -22,6 +22,40 @@ class Student:
         else:
             return "Ошибка"
 
+    def __str__(self):
+        avg_grade = self._get_avg_grade()
+        courses_in_progress = ', '.join(self.courses_in_progress)
+        finished_courses = ', '.join(self.finished_courses) if self.finished_courses else "Нет завершенных курсов"
+        return (
+            f"Имя: {self.name}\n"
+            f"Фамилия: {self.surname}\n"
+            f"Средняя оценка за домашние задания: {avg_grade:.1f}\n"
+            f"Курсы в процессе изучения: {courses_in_progress}\n"
+            f"Завершенные курсы: {finished_courses}"
+        )
+
+    def _get_avg_grade(self):
+        """Вспомогательный метод для вычисления средней оценки."""
+        if not self.grades:
+            return 0.0
+        all_grades = [grade for grades in self.grades.values() for grade in grades]
+        return sum(all_grades) / len(all_grades)
+
+    def __lt__(self, other):
+        if not isinstance(other, Student):
+            raise TypeError("Можно сравнивать только студентов между собой")
+        return self._get_avg_grade() < other._get_avg_grade()
+
+    def __gt__(self, other):
+        if not isinstance(other, Student):
+            raise TypeError("Можно сравнивать только студентов между собой")
+        return self._get_avg_grade() > other._get_avg_grade()
+
+    def __eq__(self, other):
+        if not isinstance(other, Student):
+            raise TypeError("Можно сравнивать только студентов между собой")
+        return self._get_avg_grade() == other._get_avg_grade()
+
 
 class Mentor:
     def __init__(self, name, surname):
@@ -35,6 +69,35 @@ class Lecturer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
         self.grades = {}
+
+    def __str__(self):
+        avg_grade = self._get_avg_grade()
+        return (
+            f"Имя: {self.name}\n"
+            f"Фамилия: {self.surname}\n"
+            f"Средняя оценка за лекции: {avg_grade:.1f}"
+        )
+
+    def _get_avg_grade(self):
+        if not self.grades:
+            return 0.0
+        all_grades = [grade for grades in self.grades.values() for grade in grades]
+        return sum(all_grades) / len(all_grades)
+
+    def __lt__(self, other):
+        if not isinstance(other, Lecturer):
+            raise TypeError("Можно сравнивать только лекторов между собой")
+        return self._get_avg_grade() < other._get_avg_grade()
+
+    def __gt__(self, other):
+        if not isinstance(other, Lecturer):
+            raise TypeError("Можно сравнивать только лекторов между собой")
+        return self._get_avg_grade() > other._get_avg_grade()
+
+    def __eq__(self, other):
+        if not isinstance(other, Lecturer):
+            raise TypeError("Можно сравнивать только лекторов между собой")
+        return self._get_avg_grade() == other._get_avg_grade()
 
 
 class Reviewer(Mentor):
@@ -54,22 +117,55 @@ class Reviewer(Mentor):
         else:
             return "Ошибка"
 
+    def __str__(self):
+        return f"Имя: {self.name}\nФамилия: {self.surname}"
 
-cool_lecturer = Lecturer("Ivan", "Petrov")
-cool_lecturer.courses_attached.append("Python")
 
-cool_reviewer = Reviewer("Anna", "Sidorova")
-cool_reviewer.courses_attached.append("Python")
+lecturer1 = Lecturer("Ivan", "Petrov")
+lecturer1.courses_attached.append("Python")
+lecturer2 = Lecturer("Anna", "Sidorova")
+lecturer2.courses_attached.append("Python")
 
-best_student = Student("Ruoy", "Eman", "male")
-best_student.courses_in_progress.append("Python")
+reviewer = Reviewer("Some", "Buddy")
+reviewer.courses_attached.append("Python")
 
-cool_reviewer.rate_hw(best_student, "Python", 10)
-cool_reviewer.rate_hw(best_student, "Python", 9)
-cool_reviewer.rate_hw(best_student, "Python", 8)
+student1 = Student("Ruoy", "Eman", "male")
+student1.courses_in_progress.extend(["Python", "Git"])
+student1.finished_courses.append("Введение в программирование")
 
-best_student.rate_lecturer(cool_lecturer, "Python", 10)
-best_student.rate_lecturer(cool_lecturer, "Python", 9)
+student2 = Student("Alice", "Smith", "female")
+student2.courses_in_progress.append("Python")
 
-print("Оценки студента:", best_student.grades)
-print("Оценки лектора:", cool_lecturer.grades)
+
+reviewer.rate_hw(student1, "Python", 9)
+reviewer.rate_hw(student1, "Python", 10)
+reviewer.rate_hw(student2, "Python", 8)
+
+
+student1.rate_lecturer(lecturer1, "Python", 10)
+student1.rate_lecturer(lecturer1, "Python", 9)
+student2.rate_lecturer(lecturer2, "Python", 8)
+
+
+print("--- Reviewer ---")
+print(reviewer)
+
+print("\n--- Lecturer 1 ---")
+print(lecturer1)
+
+print("\n--- Lecturer 2 ---")
+print(lecturer2)
+
+print("\n--- Student 1 ---")
+print(student1)
+
+print("\n--- Student 2 ---")
+print(student2)
+
+print("\nСравнение лекторов:")
+print(f"lecturer1 > lecturer2: {lecturer1 > lecturer2}")
+print(f"lecturer1 == lecturer2: {lecturer1 == lecturer2}")
+
+print("\nСравнение студентов:")
+print(f"student1 > student2: {student1 > student2}")
+print(f"student1 == student2: {student1 == student2}")
