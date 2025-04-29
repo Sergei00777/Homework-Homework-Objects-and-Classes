@@ -1,4 +1,4 @@
-# Домашняя Работа задача 3
+# Домашняя Работа задача 4
 class Student:
     def __init__(self, name, surname, gender):
         self.name = name
@@ -56,13 +56,11 @@ class Student:
             raise TypeError("Можно сравнивать только студентов между собой")
         return self._get_avg_grade() == other._get_avg_grade()
 
-
 class Mentor:
     def __init__(self, name, surname):
         self.name = name
         self.surname = surname
         self.courses_attached = []
-
 
 class Lecturer(Mentor):
     """Класс для лекторов (наследуется от Mentor)."""
@@ -99,7 +97,6 @@ class Lecturer(Mentor):
             raise TypeError("Можно сравнивать только лекторов между собой")
         return self._get_avg_grade() == other._get_avg_grade()
 
-
 class Reviewer(Mentor):
     """Класс для проверяющих (наследуется от Mentor)."""
 
@@ -120,14 +117,32 @@ class Reviewer(Mentor):
     def __str__(self):
         return f"Имя: {self.name}\nФамилия: {self.surname}"
 
+def calculate_avg_hw_grade(students, course):
+    """Средняя оценка за ДЗ по всем студентам в рамках курса."""
+    total_grades = []
+    for student in students:
+        if course in student.grades:
+            total_grades.extend(student.grades[course])
+    return sum(total_grades) / len(total_grades) if total_grades else 0.0
+
+def calculate_avg_lecture_grade(lecturers, course):
+    """Средняя оценка за лекции всех лекторов в рамках курса."""
+    total_grades = []
+    for lecturer in lecturers:
+        if course in lecturer.grades:
+            total_grades.extend(lecturer.grades[course])
+    return sum(total_grades) / len(total_grades) if total_grades else 0.0
 
 lecturer1 = Lecturer("Ivan", "Petrov")
 lecturer1.courses_attached.append("Python")
 lecturer2 = Lecturer("Anna", "Sidorova")
 lecturer2.courses_attached.append("Python")
 
-reviewer = Reviewer("Some", "Buddy")
-reviewer.courses_attached.append("Python")
+reviewer1 = Reviewer("Oleg", "Kuznet")
+reviewer1.courses_attached.append("Python")
+
+reviewer2 = Reviewer("Elena", "Smirnova")
+reviewer2.courses_attached.append("Git")
 
 student1 = Student("Ruoy", "Eman", "male")
 student1.courses_in_progress.extend(["Python", "Git"])
@@ -136,36 +151,37 @@ student1.finished_courses.append("Введение в программирова
 student2 = Student("Alice", "Smith", "female")
 student2.courses_in_progress.append("Python")
 
+reviewer1.rate_hw(student1, "Python", 9)
+reviewer1.rate_hw(student1, "Python", 10)
+reviewer1.rate_hw(student2, "Python", 8)
 
-reviewer.rate_hw(student1, "Python", 9)
-reviewer.rate_hw(student1, "Python", 10)
-reviewer.rate_hw(student2, "Python", 8)
-
+reviewer2.rate_hw(student1, "Git", 7)
 
 student1.rate_lecturer(lecturer1, "Python", 10)
 student1.rate_lecturer(lecturer1, "Python", 9)
 student2.rate_lecturer(lecturer2, "Python", 8)
 
+print("--- Проверяющие ---")
+print(reviewer1)
+print("\n" + str(reviewer2))
 
-print("--- Reviewer ---")
-print(reviewer)
-
-print("\n--- Lecturer 1 ---")
+print("\n--- Лекторы ---")
 print(lecturer1)
+print("\n" + str(lecturer2))
 
-print("\n--- Lecturer 2 ---")
-print(lecturer2)
-
-print("\n--- Student 1 ---")
+print("\n--- Студенты ---")
 print(student1)
-
-print("\n--- Student 2 ---")
-print(student2)
+print("\n" + str(student2))
 
 print("\nСравнение лекторов:")
 print(f"lecturer1 > lecturer2: {lecturer1 > lecturer2}")
-print(f"lecturer1 == lecturer2: {lecturer1 == lecturer2}")
 
 print("\nСравнение студентов:")
 print(f"student1 > student2: {student1 > student2}")
-print(f"student1 == student2: {student1 == student2}")
+
+avg_hw = calculate_avg_hw_grade([student1, student2], "Python")
+avg_lecture = calculate_avg_lecture_grade([lecturer1, lecturer2], "Python")
+
+print("\n--- Средние оценки по курсу Python ---")
+print(f"Средняя оценка за ДЗ: {avg_hw:.1f}")
+print(f"Средняя оценка за лекции: {avg_lecture:.1f}")
